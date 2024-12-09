@@ -10,6 +10,6 @@ type AuthModel struct {
 }
 
 type AuthInterface interface {
-	Login() (string, error)
+	Login(*http.Request) (string, error)
 	Register(*http.Request) (string, error)
 }

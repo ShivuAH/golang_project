@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"sever/model"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/google/uuid"
@@ -37,6 +38,20 @@ func (ar *AuthRepository) Register(r *http.Request) (string, error) {
 	}
 	return "Success", nil
 }
-func (ar *AuthRepository) Login() (string, error) {
-	return "", nil
+func (ar *AuthRepository) Login(r *http.Request) (string, error) {
+	var loginUser model.AuthModel
+	err := json.NewDecoder(r.Body).Decode(&loginUser)
+	if err != nil {
+		return "", err
+	}
+	var storedHash string
+	err = ar.db.QueryRow("SELECT password From Where user_name =$1", loginUser.UserName).Scan(&storedHash)
+	if err != nil {
+		return "", err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(loginUser.Password))
+	if err != nil {
+		return "", err
+	}
+	return "login succesful", nil
 }

@@ -21,6 +21,7 @@ mux := http.NewServeMux()
 repo := repository.NewAuthRepository(con)
 contr := controller.NewAuthController(repo)
 mux.HandleFunc("/register", contr.RegisterController)
+mux.HandleFunc("/login",contr.LoginController)
 PORT := ":8000"
 log.Printf("Server is running on port %v", PORT)
 log.Fatal(http.ListenAndServe(PORT, mux))
