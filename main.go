@@ -2,28 +2,26 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
+	"sever/controller"
+	"sever/repository"
 
 	_ "github.com/lib/pq"
 )
 
-func main() {
 
-	db, err := sql.Open("postgres", "postgresql://shivu_user:jczvCepM28TDYReaCkBDnHcpzXfJoTz5@dpg-cta389qj1k6c738gs6m0-a.singapore-postgres.render.com/shivu")
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(w, "Hello Shivu")
-		log.Printf("Request recived on /login")
-
-	})
-
-	log.Println("Hello Shivu")
-
-	log.Fatal(http.ListenAndServe(":8000", nil))
+func main(){
+con , err := sql.Open("postgres", "postgresql://auth_p959_user:YeiKsBKDQb2biAzqYDfwY8ygCw84vSzy@dpg-ct856vd2ng1s73f1ice0-a.oregon-postgres.render.com/auth_p959")
+if err != nil {
+panic(err)
+}
+defer con.Close()
+mux := http.NewServeMux()
+repo := repository.NewAuthRepository(con)
+contr := controller.NewAuthController(repo)
+mux.HandleFunc("/register", contr.RegisterController)
+PORT := ":8000"
+log.Printf("Server is running on port %v", PORT)
+log.Fatal(http.ListenAndServe(PORT, mux))
 }
