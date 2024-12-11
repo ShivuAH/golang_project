@@ -7,6 +7,8 @@ import (
 	"sever/controller"
 	"sever/repository"
 
+	"github.com/gorilla/mux"
+
 	_ "github.com/lib/pq"
 )
 
@@ -16,11 +18,11 @@ func main() {
 		panic(err)
 	}
 	defer con.Close()
-	mux := http.NewServeMux()
-	repo := repository.NewAuthRepository(con)
-	contr := controller.NewAuthController(repo)
-	mux.HandleFunc("/register", contr.RegisterController)
-	mux.HandleFunc("/login", contr.LoginController)
+	mux:= mux.NewRouter()
+	authrepo := repository.NewAuthRepository(con)
+	authcontr := controller.NewAuthController(authrepo)
+	mux.HandleFunc("/register", authcontr.RegisterController)
+	mux.HandleFunc("/login", authcontr.LoginController)
 	PORT := ":8000"
 	log.Printf("Server is running on port %v", PORT)
 	log.Fatal(http.ListenAndServe(PORT, mux))
